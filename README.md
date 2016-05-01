@@ -29,8 +29,8 @@
     - save inner html to `15UW-Alg-group/lintcode-main.html` (override this file)
 
 2. Known bugs:
-    - parsing "399. Nuts & Blots Problem" will generate two questions: 
-    "399._Nuts" and "Blots_Problem". This is because lintcode allow using `&` in their question's title( bad practice :-( ), which would cause HTMLParser cannot get correct data in this tag. Currently I have no good idea of how to solving this problem, and I just filter out the second one "Blots_Problem".
+    - parsing `399. Nuts & Blots Problem` will generate two questions: 
+    `399._Nuts` and `Blots_Problem`. This is because lintcode allow using `&` in their question's title( bad practice :-( ), which would cause HTMLParser cannot get correct data in this tag. Currently I have no good idea of how to solving this problem, and I just filter out the second one `Blots_Problem`.
 
 ## TODO
 1. consider using `urllib2` or `Selenuim` (may need specific firefox version)
