@@ -5,6 +5,8 @@ from HTMLParser import HTMLParser
 # create a subclass and override the handler methods
 class MyHTMLParser(HTMLParser):
     def __init__(self):
+        # cannot using super() here because HTMLParser is an `old-style` class
+        # http://stackoverflow.com/questions/9698614/super-raises-typeerror-must-be-type-not-classobj-for-new-style-class
         HTMLParser.__init__(self)
         # Tricky globa1 variable
         self.flag = False
