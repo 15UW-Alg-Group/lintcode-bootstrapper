@@ -1,4 +1,14 @@
-# Simle and Stupid Crawler for lintcode
+# Simle and Stupid Bootstrapper for group practicing the lintcode
+
+## Prerequisites
+    1. Python >= 2.7 (mine version is 2.7.10, and the version above this should be fine)
+
+## Usage
+1. first fork the `15UW-lintcode` repo to your own github account.
+2. In your local machine, create a folder named `15UW-Alg-Group`
+3. In `15UW-Alg-Group` clone this repo
+4. in the clone `lintcode-bootstrapper`, run
+    ``` python simpleBootstrap.py -u <git-user-name> ```
 
 ## Basic work flow
 
@@ -6,7 +16,9 @@
     in lintcode problems page.) to grab the question list
 
 2. for each question in question_list, do:
-    ``` mkdir ../lintcode/<question_name> ```
+    ``` mkdir 15UW-Alg-Group/15UW-lintcode/<question_name> ```
+
+3. in `15UW-lintcode/`create eclipse `.classpath` and `.project` config file.
 
 ## Note
 1. refresh lintcode_main.html:
