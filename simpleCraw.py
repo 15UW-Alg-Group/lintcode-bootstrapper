@@ -42,9 +42,12 @@ if __name__ == '__main__':
     f = open('lintcode_main.html', 'r')
     parser = MyHTMLParser()
     parser.feed(f.read())
-    if not os.path.isdir("../lintcode"):
-        os.mkdir("../lintcode")
-    os.chdir("../lintcode")
+    lintcode_relative_path = "../"
+    lintcode_repo_name = "15UW-lintcode"
+    lintcode_dir = lintcode_relative_path + lintcode_repo_name
+    if not os.path.isdir(lintcode_dir):
+        os.mkdir(lintcode_dir)
+    os.chdir(lintcode_dir)
     question_list = parser.QUESTION_LIST
     for question in question_list:
         if not os.path.isdir("./"+question):
