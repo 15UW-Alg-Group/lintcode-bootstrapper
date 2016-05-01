@@ -1,5 +1,5 @@
-import os
-import re
+import os, sys, re, getopt, subprocess
+
 from HTMLParser import HTMLParser
 
 # create a subclass and override the handler methods
@@ -23,6 +23,7 @@ class MyHTMLParser(HTMLParser):
         if tag != "span":
             return
         self.flag = False
+
     def handle_data(self, data):
         if not self.flag:
             return
@@ -71,30 +72,62 @@ ECLIPSE_PROJECT = '<?xml version="1.0" encoding="UTF-8"?>\n\
 </projectDescription>\n'
 
 if __name__ == '__main__':
+    # root directory (15UW-Alg-group)
+    ROOT = os.path.dirname(os.path.dirname(__file__))
+    GIT_USER = '15UW-Alg-Group'
+    LINTCODE_REPO = "15UW-lintcode"
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],"hu:",["gituser=",])
+    except getopt.GetoptError:
+        print 'usage: python simleCraw.py -u|--gituser <github username>'
+        sys.exit()
+
+    for opt, arg in opts:
+        if opt == 'h':
+            print 'usage: python simleCraw.py -u|--gituser <github username>'
+            sys.exit()
+        elif opt in ("-u", "--gituser"):
+            GIT_USER = arg
+    print "gituser is: ", GIT_USER
+
+    os.chdir(ROOT)
+    if not os.path.isdir(LINTCODE_REPO):
+        try:
+            # best practice of passing cmd to subprocess:
+            # http://stackoverflow.com/questions/4348524/subprocess-variables
+            lintcode_repo_url = "https://github.com/"+GIT_USER+"/15UW-lintcode.git"
+            git_cmd = "git clone {0}".format(lintcode_repo_url)
+            subprocess.check_output(git_cmd.split(), shell=False)
+        except subprocess.CalledProcessError:
+            print "Error when calling git clone, is the repo url does not right?"
+            sys.exit(1)
+
+    # print "success clone your lintcode repo!"
+    # Change working directory so relative paths works
+    os.chdir(os.path.dirname(__file__))
+
     f = open('lintcode_main.html', 'r')
     parser = MyHTMLParser()
     parser.feed(f.read())
     f.close()
 
-    lintcode_relative_path = "../"
-    lintcode_repo_name = "15UW-lintcode"
-    lintcode_dir = lintcode_relative_path + lintcode_repo_name
-
     # initialize lintcode repo and eclipse config
-    if not os.path.isdir(lintcode_dir):
-        os.mkdir(lintcode_dir)
-        os.mkdir(lintcode_dir+"/src")
-        # config eclipse project
-        os.chdir(lintcode_dir)
+    os.chdir(os.path.join(ROOT,LINTCODE_REPO))
+    if not os.path.isdir("src"):
+        os.mkdir("src")
+    # config eclipse project
+    if not os.path.isfile(".classpath"):
         f = open('.classpath', 'w')
         f.write(ECLIPSE_CLASSPATH)
         f.close()
+    if not os.path.isfile(".project"):
         f = open('.project', 'w')
         f.write(ECLIPSE_PROJECT)
         f.close()
 
-    os.chdir(lintcode_dir+"/src")
+    os.chdir(os.path.join(ROOT,LINTCODE_REPO, "src"))
 
     for question in parser.QUESTION_LIST:
-        if not os.path.isdir("./"+question):
-            os.mkdir("./"+question)
+        if not os.path.isdir(question):
+            os.mkdir(question)
