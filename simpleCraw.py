@@ -31,6 +31,9 @@ class MyHTMLParser(HTMLParser):
             question_title = "00" + question_title
         if question_title[2] == '.':
             question_title = "0" + question_title
+        #assume maximum quetions No. in lintcode < 1000
+        if question_title[3] != ".":
+            return
         self.QUESTION_LIST.append(question_title)
 
 
@@ -40,7 +43,7 @@ if __name__ == '__main__':
     parser = MyHTMLParser()
     parser.feed(f.read())
     if not os.path.isdir("../lintcode"):
-        os.mkdir("../lintcode", 0755)
+        os.mkdir("../lintcode")
     os.chdir("../lintcode")
     question_list = parser.QUESTION_LIST
     for question in question_list:
