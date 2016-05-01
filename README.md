@@ -1,4 +1,4 @@
-# Simle and Stupid Bootstrapper for group practicing the lintcode
+# Simple and Stupid Bootstrapper for group practicing the lintcode
 
 ## Prerequisites
     1. Python >= 2.7 (mine version is 2.7.10, and the version above this should be fine)
