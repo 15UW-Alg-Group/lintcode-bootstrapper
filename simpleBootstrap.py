@@ -1,5 +1,5 @@
 import os, sys, re, getopt, subprocess
-
+from os.path import dirname, abspath, join, isfile, isdir
 from HTMLParser import HTMLParser
 
 # create a subclass and override the handler methods
@@ -47,54 +47,12 @@ class MyHTMLParser(HTMLParser):
         # (should begin with letter)
         self.QUESTION_LIST.append("Q" + question_title)
 
-# don't use `os.linesep`: http://stackoverflow.com/questions/11497376/new-line-python
-ECLIPSE_CLASSPATH = '<?xml version="1.0" encoding="UTF-8"?>\n\
-<classpath>\n\
-        <classpathentry kind="src" path="src"/>\n\
-        <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>\n\
-        <classpathentry kind="output" path="bin"/>\n\
-</classpath>\n'
+def usage():
+    print 'usage: python simleCraw.py -u|--gituser <github username>'
 
-ECLIPSE_PROJECT = '<?xml version="1.0" encoding="UTF-8"?>\n\
-<projectDescription>\n\
-        <name>15UW-lintcode</name>\n\
-        <comment></comment>\n\
-        <projects>\n\
-        </projects>\n\
-        <buildSpec>\n\
-                <buildCommand>\n\
-                        <name>org.eclipse.jdt.core.javabuilder</name>\n\
-                        <arguments>\n\
-                        </arguments>\n\
-                </buildCommand>\n\
-        </buildSpec>\n\
-        <natures>\n\
-                <nature>org.eclipse.jdt.core.javanature</nature>\n\
-        </natures>\n\
-</projectDescription>\n'
-
-if __name__ == '__main__':
-    # root directory (15UW-Alg-group)
-    ROOT = os.path.dirname(os.path.dirname(__file__))
-    GIT_USER = '15UW-Alg-Group'
-    LINTCODE_REPO = "15UW-lintcode"
-
-    try:
-        opts, args = getopt.getopt(sys.argv[1:],"hu:",["gituser=",])
-    except getopt.GetoptError:
-        print 'usage: python simleCraw.py -u|--gituser <github username>'
-        sys.exit()
-
-    for opt, arg in opts:
-        if opt == 'h':
-            print 'usage: python simleCraw.py -u|--gituser <github username>'
-            sys.exit()
-        elif opt in ("-u", "--gituser"):
-            GIT_USER = arg
-    print "gituser is: ", GIT_USER
-
+def clone_lintcode_repo(ROOT, GIT_USER, LINTCODE_REPO):
     os.chdir(ROOT)
-    if not os.path.isdir(LINTCODE_REPO):
+    if not isdir(LINTCODE_REPO):
         try:
             # best practice of passing cmd to subprocess:
             # http://stackoverflow.com/questions/4348524/subprocess-variables
@@ -105,31 +63,54 @@ if __name__ == '__main__':
             print "Error when calling git clone, is the repo url does not right?"
             sys.exit(1)
 
-    # print "success clone your lintcode repo!"
+def bootstrap_lintcode_repo(ROOT, LINTCODE_REPO):
     # Change working directory so relative paths works
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(join(ROOT,LINTCODE_REPO))
 
-    f = open('lintcode_main.html', 'r')
+    f = open('../lintcode-bootstrapper/lintcode_main.html', 'r')
     parser = MyHTMLParser()
     parser.feed(f.read())
     f.close()
 
     # initialize lintcode repo and eclipse config
-    os.chdir(os.path.join(ROOT,LINTCODE_REPO))
-    if not os.path.isdir("src"):
+    if not isdir("src"):
         os.mkdir("src")
-    # config eclipse project
-    if not os.path.isfile(".classpath"):
-        f = open('.classpath', 'w')
-        f.write(ECLIPSE_CLASSPATH)
-        f.close()
-    if not os.path.isfile(".project"):
-        f = open('.project', 'w')
-        f.write(ECLIPSE_PROJECT)
-        f.close()
 
-    os.chdir(os.path.join(ROOT,LINTCODE_REPO, "src"))
+    os.chdir(join(ROOT,LINTCODE_REPO, "src"))
 
     for question in parser.QUESTION_LIST:
-        if not os.path.isdir(question):
+        if not isdir(question):
             os.mkdir(question)
+
+if __name__ == '__main__':
+    # http://stackoverflow.com/questions/7783308/os-path-dirname-file-returns-empty
+    SCRIPT_DIR = dirname(abspath(__file__))
+    # root directory (15UW-Alg-group)
+    ROOT = dirname(SCRIPT_DIR)
+    GIT_USER = None
+    LINTCODE_REPO = "15UW-lintcode"
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],"hu:",["gituser=",])
+    except getopt.GetoptError as err:
+        print str(err)
+        usage()
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt == 'h':
+            print 'usage: python simleCraw.py -u|--gituser <github username>'
+            sys.exit()
+        elif opt in ("-u", "--gituser"):
+            GIT_USER = arg
+        else:
+            assert False, "Found unhandled option"
+
+    if GIT_USER is None:
+        print "Hey, I need your github username to clone your lintcode repo."
+        usage()
+        sys.exit(2)
+
+    clone_lintcode_repo(ROOT, GIT_USER, LINTCODE_REPO)
+
+    bootstrap_lintcode_repo(ROOT, LINTCODE_REPO)
