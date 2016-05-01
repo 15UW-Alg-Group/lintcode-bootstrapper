@@ -8,17 +8,14 @@
 2. In your local machine, create a folder named `15UW-Alg-Group`
 3. In `15UW-Alg-Group` clone this repo
 4. in the clone `lintcode-bootstrapper`, run
-    ``` python simpleBootstrap.py -u <git-user-name> ```
+    ``` python simpleBootstrap.py ```
 
 ## Basic work flow
 
 1. parse `lintcode_main.html` (which actually is the `problem_list_pagination` div 
     in lintcode problems page.) to grab the question list
 
-2. for each question in question_list, do:
-    ``` mkdir 15UW-Alg-Group/15UW-lintcode/<question_name> ```
-
-3. in `15UW-lintcode/`create eclipse `.classpath` and `.project` config file.
+2. for each question in question_list, add a .md file for this question.
 
 ## Note
 1. refresh lintcode_main.html:
